@@ -1,0 +1,108 @@
+import math
+def calculate_emi(principal, rate, tenure):
+    monthly_rate = rate / (12 * 100)
+
+    if monthly_rate == 0:
+        return principal / tenure
+
+    emi = (principal * monthly_rate * (1 + monthly_rate) ** tenure) / \
+          ((1 + monthly_rate) ** tenure - 1)
+
+    return emi
+
+def loan_summary(principal, rate, tenure):
+    emi = calculate_emi(principal, rate, tenure)
+    total_payment = emi * tenure
+    total_interest = total_payment - principal
+
+    print("\nLOAN SUMMARY")
+    print(f"Loan Amount      : ₹{principal:.2f}")
+    print(f"Interest Rate    : {rate}%")
+    print(f"Tenure           : {tenure} months")
+    print(f"Monthly EMI      : ₹{emi:.2f}")
+    print(f"Total Payment    : ₹{total_payment:.2f}")
+    print(f"Total Interest   : ₹{total_interest:.2f}")
+
+
+
+def prepayment_simulator(principal, rate, tenure, prepayment, month):
+    emi = calculate_emi(principal, rate, tenure)
+    monthly_rate = rate / (12 * 100)
+
+    balance = principal
+
+    for m in range(1, tenure + 1):
+        interest = balance * monthly_rate
+        principal_paid = emi - interest
+        balance -= principal_paid
+
+        if m == month:
+            balance -= prepayment
+            print(f"\n Prepayment of ₹{prepayment} made at month {month}")
+
+        if balance <= 0:
+            print("\nLoan closed early!")
+            print(f"Loan closed in {m} months instead of {tenure} months")
+            return
+
+    print("\nLoan not fully closed within tenure.")
+
+
+
+def get_float_input(msg):
+    while True:
+        try:
+            return float(input(msg))
+        except ValueError:
+            print("Invalid input! Enter a number.")
+
+def get_int_input(msg):
+    while True:
+        try:
+            return int(input(msg))
+        except ValueError:
+            print("Invalid input! Enter an integer.")
+
+def main():
+    while True:
+        print("\n====== EMI MASTER ======")
+        print("1. Calculate EMI")
+        print("2. Loan Summary")
+        print("3. Prepayment Simulation")
+        print("4. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            p = get_float_input("Enter Loan Amount: ")
+            r = get_float_input("Enter Interest Rate (%): ")
+            t = get_int_input("Enter Tenure (months): ")
+
+            emi = calculate_emi(p, r, t)
+            print(f"\n💸 Monthly EMI: ₹{emi:.2f}")
+
+        elif choice == "2":
+            p = get_float_input("Enter Loan Amount: ")
+            r = get_float_input("Enter Interest Rate (%): ")
+            t = get_int_input("Enter Tenure (months): ")
+
+            loan_summary(p, r, t)
+
+        elif choice == "3":
+            p = get_float_input("Enter Loan Amount: ")
+            r = get_float_input("Enter Interest Rate (%): ")
+            t = get_int_input("Enter Tenure (months): ")
+            prepay = get_float_input("Enter Prepayment Amount: ")
+            month = get_int_input("Enter Month of Prepayment: ")
+
+            prepayment_simulator(p, r, t, prepay, month)
+
+        elif choice == "4":
+            print("Exiting EMI Master...")
+            break
+
+        else:
+            print(" Invalid choice! Try again.")
+
+if __name__ == "__main__":
+    main()
